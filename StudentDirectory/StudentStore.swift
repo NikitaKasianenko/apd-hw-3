@@ -11,6 +11,10 @@ final class StudentStore {
         students.filter { $0.subjects.contains(subject) }
     }
 
+    func student(id: UUID) -> Student? {
+        students.first { $0.id == id }
+    }
+
     func addStudent(name: String, age: Int) throws {
         try validate(name: name, age: age)
         students.append(Student(id: UUID(), name: name, age: age, averageGrade: 0, isScholarshipHolder: false, subjects: [], avatarName: "avatar-default"))

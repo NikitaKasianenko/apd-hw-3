@@ -6,12 +6,15 @@ you rejected or revised; if none was rejectable, explain why.
 
 | Date | Tool/task | Student review | Evidence |
 | --- | --- | --- | --- |
-| YYYY-MM-DD | Replace this row with your first entry | Describe the inspection | Command, test, diff, or artifact |
+| 2026-11-08 | Claude Code (Opus 5.5): base UI — `StudentListViewController` (`.all` / `.subject` modes), `StudentCell`, `StudentDetailViewController`, `StudentFormatting`, one `StudentStore` created in `SceneDelegate`, `StudentStore.student(id:)` | Read the diff of the 5 new app files. Checked: `SceneDelegate` is the only place that creates a `StudentStore`; no controller stores a `[Student]` (list reads `visibleStudents` from the store, details keep only `studentID`); all layout uses SnapKit; no `!` force unwraps in new code; every label uses `preferredFont` + `adjustsFontForContentSizeCategory` + `numberOfLines = 0`. Revised: the first detail layout stretched the avatar to full width — moved it into a fixed 96×96 container. | `git diff`; local `xcodebuild ... test` passed |
+| 2026-11-08 | Claude Code: 15 base tests in new files (`StudentStoreTests`, `StudentControllerTests`, `StudentNavigationUITests`); starter tests unchanged | Checked each test asserts real behaviour (exact case-sensitive filter `Math` vs `math`, store order, shared-store identity `===`, real identifiers) rather than just “exists”. No `sleep`, network, `Date()` or random values; UI tests rely only on seed data and accessibility identifiers. Starter test files are unchanged (`git diff` shows nothing for them). | 19/19 tests passed locally |
+| 2026-11-08 | Claude Code: bonus — `StudentFormViewController` (name/age, validation alerts), `addStudentButton`, `editStudentButton`, swipe to delete; 12 tests (`StudentMutationTests`, `StudentMutationUITests`) | Checked that the form only edits name and age, trims the name, rejects non-numeric age before calling the store, and calls `onSave` only after a successful store call; invalid input / unknown ID tests assert the array is unchanged. Revised: the edit UI test deleted characters after tapping the field, but the tap can place the cursor mid-text — switched to the field's Clear button. | 31/31 tests passed locally |
+| 2026-11-08 | Claude Code: added shared scheme `StudentDirectory.xcscheme` with `parallelizable = NO` — the auto-generated scheme ran UI tests on parallel simulator clones, which hung twice locally (runner `RequestDenied` / clone boot timeout) | Revised: the agent's diagnostic run used `-parallel-testing-enabled NO`, but the required command must stay exactly as given, so the fix went into a shared scheme with `parallelizable = NO` instead. Opened the `.xcscheme`: it only lists the app and the two test targets, no extra settings. | Same exact command, no clones, passed |
 
 ## Final review
 
-- Agent/tool disclosure:
-- Accepted and rejected/revised recommendations:
-- Exact local test command and result:
-- CI URL/status:
-- Known limitation or remaining risk:
+- Agent/tool disclosure: Claude Code (Claude Opus 5.5) wrote the implementation, tests, and shared scheme listed above.
+- Accepted and rejected/revised recommendations: Accepted the MVC split, shared store and tests. Revised the parallel-clone workaround from a command flag (`-parallel-testing-enabled NO`) to a shared scheme so the required command stays unchanged. Revised the detail avatar layout and the edit UI test (Clear button instead of deleting characters).
+- Exact local test command and result: `xcodebuild -project StudentDirectory.xcodeproj -scheme StudentDirectory -destination 'platform=iOS Simulator,name=iPhone 17' test` → `** TEST SUCCEEDED **`, 31 tests passed, 0 failed (Xcode 27.0, iPhone 17 simulator, 2026-11-08).
+- CI URL/status: TODO — not pushed yet.
+- Known limitation or remaining risk: UI tests use `waitForExistence(timeout:)` like the starter tests (no sleeps). Parallel testing is turned off in the shared scheme for reliability. CI (`macos-15`) builds with Xcode 16.4 while local runs used Xcode 27.0, so only the CI run proves the build there.

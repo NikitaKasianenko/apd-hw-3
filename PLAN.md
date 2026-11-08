@@ -41,11 +41,11 @@ and right after each successful mutation, so visible state is always fresh.
 
 ## Milestones
 
-- [ ] Student list and reusable cell
-- [ ] Detail screen and navigation
-- [ ] Subject-filtered list
-- [ ] Unit and UI tests
-- [ ] Optional add/edit/delete bonus, if attempted
+- [x] Student list and reusable cell
+- [x] Detail screen and navigation
+- [x] Subject-filtered list
+- [x] Unit and UI tests
+- [x] Optional add/edit/delete bonus, if attempted
 - [ ] Local verification and CI review
 - [ ] Final diff and evidence review
 
